@@ -6,7 +6,7 @@ import dotenv from "dotenv";
 dotenv.config();
 
 import routes from "./routes/webService";
-import { HttpError, HttpStatusCodes } from "./models/Errors";
+import { DatabaseError, HttpError, HttpStatusCodes } from "./models/Errors";
 import { User } from "./schemas/user";
 
 const server: Express = express();
@@ -22,12 +22,14 @@ export const seedDb = async () => {
 const eraseDatabaseOnSync = true;
 mongoose.connect(
   process.env.DATABASE_URL || "mongodb://localhost:27017/test",
-  async () => {
-    console.log("Connected to db");
+  async (err) => {
+    console.log(err);
+    if (err) throw new DatabaseError(500, err?.message);
     if (eraseDatabaseOnSync) {
-      await Promise.all([User.deleteMany({})]);
+      await User.deleteMany({});
       await seedDb();
     }
+    console.log("Connected to db");
   }
 );
 
