@@ -1,14 +1,11 @@
-FROM node:10.13.0-alpine
+FROM node:current-alpine
 
-#ENV
-ENV PORT=7001
+WORKDIR usr/app
 
-WORKDIR usr/src/app
+COPY package*.json .
+RUN npm install && npm cache clean --force
 
-COPY package.json .
-RUN npm install
+COPY . /usr/app
 
-ADD . /usr/src/app
-
-CMD [ "npm", "start" ]
 EXPOSE 7001
+CMD [ "npm", "start" ]

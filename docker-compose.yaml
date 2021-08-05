@@ -1,4 +1,4 @@
-version: "3.8"
+version: "3.9"
 services:
   db:
     image: mongo
@@ -23,10 +23,9 @@ services:
     build:
       context: .
       dockerfile: Dockerfile
-    environment:
-      ENV_NAME: dev
-      DATABASE_URL: mongodb://localhost:27018/finverse
-      PORT: 7001
+    container_name: finverse-api
+    env_file:
+      - .env
     ports:
       - 7001:7001
     networks:
