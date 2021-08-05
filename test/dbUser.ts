@@ -2,12 +2,16 @@ import * as chai from "chai";
 import "mocha";
 import QueryString from "qs";
 import mongoose from "mongoose";
+import dotenv from "dotenv";
+dotenv.config();
 
 import { User } from "../src/schemas/user";
 import { updateDbUser, getDbUser } from "../src/controllers/collector";
 import { getDbUser as getDbUserRet } from "../src/controllers/retriever";
 
 const expect = chai.expect;
+const DATABASE_URL =
+  process.env.TEST_DATABASE_URL || "mongodb://localhost:27017/test";
 
 export const seedDb = async (username: string, password: string) => {
   const user = new User({
