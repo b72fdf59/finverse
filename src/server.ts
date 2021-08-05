@@ -20,13 +20,16 @@ export const seedDb = async () => {
 };
 
 const eraseDatabaseOnSync = true;
-mongoose.connect(process.env.DATABASE_URL || "", async () => {
-  if (eraseDatabaseOnSync) {
-    await Promise.all([User.deleteMany({})]);
-    await seedDb();
+mongoose.connect(
+  process.env.DATABASE_URL || "mongodb://localhost:27017/test",
+  async () => {
+    console.log("Connected to db");
+    if (eraseDatabaseOnSync) {
+      await Promise.all([User.deleteMany({})]);
+      await seedDb();
+    }
   }
-  console.log("Connected to db");
-});
+);
 
 server.use(morgan("dev"));
 server.use(express.urlencoded({ extended: false }));
