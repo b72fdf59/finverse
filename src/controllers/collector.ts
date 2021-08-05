@@ -3,6 +3,8 @@ import axios, { AxiosRequestConfig, AxiosResponse } from "axios";
 import qs from "qs";
 import * as cheerio from "cheerio";
 import sanitizeHtml from "sanitize-html";
+import dotenv from "dotenv";
+dotenv.config();
 
 import {
   HttpError,
@@ -46,7 +48,7 @@ export const updateDbUser = async (username: string, accounts: Accounts[]) => {
 };
 
 export const loginWithCredentials = async (username: string) => {
-  const loginUrl = `http://localhost:8080/login`;
+  const loginUrl = `${process.env.WEBSERVICE_URL}/login`;
   const tmp = await getDbUser(username);
   const data: Omit<User, "accounts"> = {
     username: tmp.username,
@@ -61,7 +63,7 @@ export const loginWithCredentials = async (username: string) => {
   } catch (err) {
     const error = new HttpError(
       500,
-      err.response.data || "An error occured while logging in with credentials"
+      err.response?.data || "An error occured while logging in with credentials"
     );
     throw error;
   }
@@ -72,7 +74,6 @@ export const loginWithCredentials = async (username: string) => {
 export const parseHtmlAccounts = (html: string) => {
   const accounts: Accounts[] = [];
   const $ = cheerio.load(html);
-  $.html();
   $("table > tbody > tr").each((index, elem) => {
     if (index == 0) return true;
     const tds = $(elem).find("td");
@@ -148,14 +149,16 @@ export const extractAccountNumberFromTranactionDetails = (html: string) => {
   return accountNumber;
 };
 
-const collectTransactionsData = async (
+export const collectTransactionsData = async (
   user: string,
   html: string,
   accounts: Account[]
 ): Promise<Account[]> => {
   let transUrl = parseTransactionUrl(html);
   transUrl = transUrl.map((elem) =>
-    elem ? `http://localhost:8080/users/${user}` + elem.substr(1) : undefined
+    elem
+      ? `${process.env.WEBSERVICE_URL}/users/${user}` + elem.substr(1)
+      : undefined
   );
   let data = await Promise.all(
     transUrl.map(async (url) => {
@@ -187,7 +190,7 @@ const collectTransactionsData = async (
   return accounts;
 };
 
-const collectUserData = async (
+export const collectUserData = async (
   req: Request,
   res: Response,
   next: NextFunction

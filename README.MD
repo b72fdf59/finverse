@@ -51,5 +51,4 @@ This sections describes the schemas used for storing the data
 
 ## Future problems to fix
 
-1. The most important thing I would like to fix is to be able to test the functions that are calling the webservice. Currently, testing these would not be possible as the webserive api can return random data. In the future, I would pass the links directly to the functions. Thus, when I am testing I can pass a dummy link in which the data is static.
-2. Currently, when running _docker-compose up_ the api is not able to connect to the database. Due to this, the request always times out.
+1. Add testing for function _collectTransactionsData_ and _collectUserData_ 
