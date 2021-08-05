@@ -1,0 +1,46 @@
+version: "3.8"
+services:
+  db:
+    image: mongo
+    container_name: finverse-db
+    volumes:
+      - finverse-mongodb-data:/data/db
+    ports:
+      - 27018:27017
+    environment:
+      - PUID=1000
+      - PGID=1000
+    networks:
+      - finverse-api-db
+  web-service:
+    image: gcr.io/third-diagram-275605/test-bank
+    container_name: finverse-web-service
+    ports:
+      - 8080:8080
+    networks:
+      - finverse-api-web-service
+  api:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    environment:
+      ENV_NAME: dev
+      DATABASE_URL: mongodb://localhost:27018/finverse
+      PORT: 7001
+    ports:
+      - 7001:7001
+    networks:
+      - finverse-api-web-service
+      - finverse-api-db
+
+volumes:
+  finverse-mongodb-data:
+    name: finverse-mongodb-data
+
+networks:
+  finverse-api-db:
+    name: finverse-api-db
+    driver: bridge
+  finverse-api-web-service:
+    name: finverse-api-web-service
+    driver: bridge
